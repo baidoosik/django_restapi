@@ -6,7 +6,7 @@ db.sqlite3
 *.json
 
 #virenv
-/myvenv
+/venv
 
 #static
 staticfiles/*
