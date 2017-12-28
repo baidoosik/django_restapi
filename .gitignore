@@ -1,0 +1,33 @@
+*.pyc
+__pycache__
+db.sqlite3
+.DS_Store
+.idea/workspace.xml
+*.json
+
+#virenv
+/myvenv
+
+#static
+staticfiles/*
+
+# IPython Notebook
+.ipynb_checkpoints
+*.ipynb
+
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml
+.elasticbeanstalk/
+
+# lambda worker
+worker/email_worker
+
+# phantom js
+phantomjs-2.1.1-macosx
+ghostdriver.log
+
+#workder
+worker/eunji_worker
+worker/slack_bot
