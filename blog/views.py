@@ -1,5 +1,7 @@
 from django.shortcuts import render, get_object_or_404
 from django.http import JsonResponse, QueryDict, HttpResponse
+from rest_framework import viewsets
+from .serialiers import PostSerializer
 from .forms import PostForm
 from .models import Post
 # Create your views here.
@@ -32,3 +34,8 @@ def post_detail(request, pk):
         return HttpResponse
     else:
         return JsonResponse(post)
+
+
+class PostViewSet(viewsets.ModelViewSet):
+    queryset = Post.objects.all()
+    serializer_class = PostSerializer
