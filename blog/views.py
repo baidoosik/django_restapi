@@ -3,6 +3,7 @@ from django.http import JsonResponse, QueryDict, HttpResponse
 from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.decorators import api_view
 from .serialiers import PostSerializer
 from django.views.decorators.csrf import csrf_exempt
 from .forms import PostForm
@@ -85,4 +86,38 @@ class PostDetailView(APIView):
     def delete(self, request, pk):
         post = self.get_object(pk)
         post.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response(status=204)
+
+# api_view 장식자를 이용하는 api 응답 작성
+# api_view는 django-rest-framework 규격의 fbv 를 세팅해주는 장식자
+
+
+@api_view(['GET'], ['POST'])
+def post_list(request):
+    if request.method == 'GET':
+        serializer = PostSerializer(Post.objects.all(), many=True)
+        return Response(serializer.data)
+    else:
+        serializer = PostSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=201)
+        return Response(serializer.errors, status=400)
+
+
+@api_view(['GET', 'PUT', 'DELETE'])
+def post_detail(request, pk):
+    post = get_object_or_404(Post, pk=pk)
+
+    if request.method == 'GET':
+        serializer = PostSerializer(post)
+        return Response(serializer.data)
+    elif request.method == 'PUT':
+        serializer = PostSerializer(post, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=400)
+    else:
+        post.delete()
+        return Response(status=204)
