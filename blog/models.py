@@ -12,4 +12,6 @@ class TimeStamp(models.Model):
 
 
 class Post(TimeStamp):
+    title = models.CharField(max_length=128)
+    contents = models.TextField()
     message = models.TextField()

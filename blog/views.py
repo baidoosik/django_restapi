@@ -1,6 +1,8 @@
 from django.shortcuts import render, get_object_or_404
 from django.http import JsonResponse, QueryDict, HttpResponse
 from rest_framework import viewsets
+from rest_framework.response import Response
+from rest_framework.views import APIView
 from .serialiers import PostSerializer
 from django.views.decorators.csrf import csrf_exempt
 from .forms import PostForm
@@ -43,3 +45,44 @@ def post_detail(request, pk):
 class PostViewSet(viewsets.ModelViewSet):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
+
+
+# APIVIEW 활용해서 api 응답 만들기
+
+
+class PostListAPIView(APIView):
+    # POST요청을 받기 위해 별도로 csrf_exempt 처리를 해줄 필요가 없습니다.
+    # APIView.as_view()에서 이미 csrf_exempt처리된 뷰를 만들어주고 있기 때문입니다
+    def get(self, request):
+        serializer = PostSerializer(Post.objects.all(), many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        serializer = PostSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=201)
+        return Response(serializer.errors, status=400)
+
+
+class PostDetailView(APIView):
+    def get_object(selfs, pk):
+        return get_object_or_404(Post, pk=pk)
+
+    def get(self, request, pk, format=None):
+        post = self.get_object(pk)
+        serializer = PostSerializer(post)
+        return Response(serializer.data)
+
+    def put(self, request, pk):
+        post = self.get_object(pk)
+        serializer = PostSerializer(post, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=400)
+
+    def delete(self, request, pk):
+        post = self.get_object(pk)
+        post.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
